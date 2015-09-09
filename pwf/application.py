@@ -60,7 +60,6 @@ class Application(object):
         """Return a decorator for declaring a handler for the path."""
         path = split_path(path)
         def decorator(handler):
-            print 'Registering {} for path {}'.format(str(handler), path)
             if isinstance(handler, types.FunctionType):
                 self.router.add_handler(path, Handler({method: handler}))
             elif isinstance(handler, types.ClassType):
