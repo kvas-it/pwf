@@ -4,7 +4,7 @@ devenv: __
 
 __:
 	virtualenv __
-	__/bin/python setup.py install
+	__/bin/python setup.py develop
 
 install:
 	python setup.py install
