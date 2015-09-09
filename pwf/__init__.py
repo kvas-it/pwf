@@ -1,3 +1,4 @@
-# PWF main module.
+"""pwf -- a toy web framework."""
 
-from application import Application  # flake8: noqa
+from application import Application
+from utils import redirect

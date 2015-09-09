@@ -28,6 +28,7 @@ class Application(object):
         response = Response('200 OK')
         request = Request(environ, response)
         response_content = self.handle_request(request)
+        # TODO: transform to iterable.
         start_response(response.status, response.get_headers_list())
         return response_content
 
