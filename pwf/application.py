@@ -69,3 +69,15 @@ class Application(object):
             return handler
 
         return decorator
+
+    def demo_server(self, host='localhost', port=5000):
+        """Serve requests forever with wsgiref basic server."""
+        # We import wsgiref only inside of this method because it's not needed
+        # if we use a 'real' WSGI server.
+        from wsgiref.simple_server import make_server
+        server = make_server(host, port, self)
+        print("Serving HTTP on {}:{}...".format(host, port))
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            print("Interrupted.")

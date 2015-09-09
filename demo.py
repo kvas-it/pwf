@@ -17,9 +17,4 @@ def index(request, name=None):
 
 
 if __name__ == '__main__':
-    HOST = 'localhost'
-    PORT = 5000
-    from wsgiref.simple_server import make_server
-    server = make_server(HOST, PORT, app)
-    print("Serving HTTP on {}:{}...".format(HOST, PORT))
-    server.serve_forever()
+    app.demo_server()
