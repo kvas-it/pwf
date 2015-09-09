@@ -2,6 +2,7 @@
 
 import types
 
+from .error_handlers import HTTP404
 from .path import is_error_path, split_path
 from .request import Request
 from .response import Response
@@ -20,6 +21,7 @@ class Application(object):
 
     def __init__(self):
         self.router = Router()
+        self.router.add_handler(['#err_404'], HTTP404())
 
     def __call__(self, environ, start_response):
         """Entry point from WSGI."""
