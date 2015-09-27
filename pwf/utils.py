@@ -28,10 +28,10 @@ def reconstruct_url(environ):
     return url
 
 
-def redirect(request, path, code='302 Moved temporarily'):
+def redirect(request, path, code=302, message=None):
     """Redirect client to another path in the application."""
     response = request.response
-    response.status = code
+    response.set_status(code, message)
     env2 = dict(request.environ)
     t = path.split('?', 2)
     env2['PATH_INFO'] = t[0]
