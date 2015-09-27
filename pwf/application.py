@@ -1,5 +1,6 @@
 """pwf.application -- main application module."""
 
+import inspect
 import types
 
 from .error_handlers import HTTP404, HTTP405
@@ -56,7 +57,10 @@ class Application(object):
             return self.handle_request(request)
 
         request.add_params(params)
-        return handler_method(request)
+        sig = inspect.getargspec(handler_method)
+        kw = {k: v for k, v in request.params.items()
+                if k in sig.args or sig.keywords is not None}
+        return handler_method(request, **kw)
 
     def path(self, path, method='GET'):
         """Return a decorator for declaring a handler for the path."""

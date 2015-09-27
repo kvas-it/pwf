@@ -9,9 +9,10 @@ def index(request):
     return pwf.redirect(request, '/hello/')
 
 @app.path('/hello/')
+@app.path('/hello/$name')
 def hello(request, name=None):
     if name:
-        return 'Hello {}!'.format(name)
+        return 'Hello, {}!'.format(name)
     else:
         return 'Hello world!'
 
