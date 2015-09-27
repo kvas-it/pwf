@@ -2,7 +2,7 @@
 
 import types
 
-from .error_handlers import HTTP404
+from .error_handlers import HTTP404, HTTP405
 from .path import is_error_path, split_path
 from .request import Request
 from .response import Response
@@ -22,10 +22,11 @@ class Application(object):
     def __init__(self):
         self.router = Router()
         self.router.add_handler(['#err_404'], HTTP404())
+        self.router.add_handler(['#err_405'], HTTP405())
 
     def __call__(self, environ, start_response):
         """Entry point from WSGI."""
-        response = Response('200 OK')
+        response = Response()
         request = Request(environ, response)
         response_content = self.handle_request(request)
         # TODO: transform to iterable.
@@ -39,7 +40,7 @@ class Application(object):
         except KeyError:
             if is_error_path(request.path):
                 # Fallback handler if everything fails.
-                request.response.status = '500 Internal server error'
+                request.response.set_status(500)
                 first_error = request.path[0][5:]
                 return ['Error handler not found for {}.'.format(first_error)]
             else:
