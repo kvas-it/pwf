@@ -35,6 +35,12 @@ class Application(object):
             return [response_content]
         return response_content
 
+    def handle_error(self, request, status_code):
+        """Pass the request to an error handler."""
+        request.path = ['#err_{}'.format(status_code)]
+        request.method = 'GET'
+        return self.handle_request(request)
+
     def handle_request(self, request):
         """Handle request."""
         try:
@@ -46,16 +52,12 @@ class Application(object):
                 first_error = request.path[0][5:]
                 return ['Error handler not found for {}.'.format(first_error)]
             else:
-                request.path = ['#err_404']  # Not found.
-                request.method = 'GET'
-                return self.handle_request(request)
+                return self.handle_error(request, 404)  # Not found.
 
         try:
             handler_method = getattr(handler, request.method)
         except AttributeError:
-            request.path = ['#err_405']  # Method not allowed.
-            request.method = 'GET'
-            return self.handle_request(request)
+            return self.handle_error(request, 405)  # Method not allowed.
 
         request.add_params(params)
         sig = inspect.getargspec(handler_method)
@@ -65,9 +67,7 @@ class Application(object):
         try:
             return handler_method(request, **kw)
         except Exception:
-            request.path = ['#err_500']  # Internal server error.
-            request.method = 'GET'
-            return self.handle_request(request)
+            return self.handle_error(request, 500)  # Internal server error.
 
     def path(self, path, method='GET'):
         """Return a decorator for declaring a handler for the path."""

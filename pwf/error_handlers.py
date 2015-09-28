@@ -1,28 +1,28 @@
 """pwf.error_handlers -- Handlers for HTTP errors."""
 
 
-class HTTP404(object):
-    """Handler for HTTP 404."""
+class SimpleHandler(object):
+    """A simple handler that just sets fixed status code and message."""
+
+    status_code = 0
+    message = ''
 
     def GET(self, request):
-        request.response.set_status(404)
-        return ['Path not found: {}{}'.format(
-            request.environ['SCRIPT_NAME'], request.environ['PATH_INFO'])]
+        request.response.set_status(self.status_code)
+        return [self.message.format(**request.environ)]
 
 
-class HTTP405(object):
-    """Handler for HTTP 405."""
-
-    def GET(self, request):
-        request.response.set_status(405)
-        return ['Method {} is not allowed for path: {}{}'.format(
-            request.environ['REQUEST_METHOD'],
-            request.environ['SCRIPT_NAME'], request.environ['PATH_INFO'])]
+class HTTP404(SimpleHandler):
+    status_code = 404
+    message = 'Path not found: {SCRIPT_NAME}{PATH_INFO}'
 
 
-class HTTP500(object):
-    """Handler for HTTP 500."""
+class HTTP405(SimpleHandler):
+    status_code = 405
+    message = ('Method {REQUEST_METHOD} is not allowed for path: '
+               '{SCRIPT_NAME}{PATH_INFO}')
 
-    def GET(self, request):
-        request.response.set_status(500)
-        return ['The application crashed']
+
+class HTTP500(SimpleHandler):
+    status_code = 500
+    message = 'The application crashed'
