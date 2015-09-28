@@ -28,4 +28,4 @@ uninstall:
 	pip uninstall -y pwf
 
 clean:
-	rm -Rf ${DEVENV} pwf.egg-info `find . -name *.pyc` build dist MANIFEST
+	rm -Rf ${DEVENV} .cache pwf.egg-info `find . -name *.pyc` build dist MANIFEST

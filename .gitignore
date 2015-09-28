@@ -1,3 +1,4 @@
 __
+.cache
 pwf.egg-info
 *.pyc
