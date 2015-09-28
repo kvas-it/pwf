@@ -1,9 +1,8 @@
 """pwf.application -- main application module."""
 
 import inspect
-import types
 
-from .error_handlers import HTTP404, HTTP405
+from .error_handlers import HTTP404, HTTP405, HTTP500
 from .path import is_error_path, split_path
 from .request import Request
 from .response import Response
@@ -24,14 +23,16 @@ class Application(object):
         self.router = Router()
         self.router.add_handler(['#err_404'], HTTP404())
         self.router.add_handler(['#err_405'], HTTP405())
+        self.router.add_handler(['#err_500'], HTTP500())
 
     def __call__(self, environ, start_response):
         """Entry point from WSGI."""
         response = Response()
         request = Request(environ, response)
         response_content = self.handle_request(request)
-        # TODO: transform to iterable.
         start_response(response.status, response.get_headers_list())
+        if isinstance(response_content, basestring):
+            return [response_content]
         return response_content
 
     def handle_request(self, request):
@@ -60,15 +61,21 @@ class Application(object):
         sig = inspect.getargspec(handler_method)
         kw = {k: v for k, v in request.params.items()
                 if k in sig.args or sig.keywords is not None}
-        return handler_method(request, **kw)
+
+        try:
+            return handler_method(request, **kw)
+        except Exception:
+            request.path = ['#err_500']  # Internal server error.
+            request.method = 'GET'
+            return self.handle_request(request)
 
     def path(self, path, method='GET'):
         """Return a decorator for declaring a handler for the path."""
         path = split_path(path)
         def decorator(handler):
-            if isinstance(handler, types.FunctionType):
+            if inspect.isfunction(handler):
                 self.router.add_handler(path, Handler({method: handler}))
-            elif isinstance(handler, types.ClassType):
+            elif inspect.isclass(handler):
                 self.router.add_handler(path, handler())
             else:
                 raise TypeError('Handler must be class or function')

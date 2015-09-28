@@ -18,3 +18,11 @@ class HTTP405(object):
         return ['Method {} is not allowed for path: {}{}'.format(
             request.environ['REQUEST_METHOD'],
             request.environ['SCRIPT_NAME'], request.environ['PATH_INFO'])]
+
+
+class HTTP500(object):
+    """Handler for HTTP 500."""
+
+    def GET(self, request):
+        request.response.set_status(500)
+        return ['The application crashed']
