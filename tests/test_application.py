@@ -3,6 +3,8 @@
 import pytest
 import requests
 
+import pwf
+
 
 @pytest.mark.usefixtures('app')
 def test_root():
@@ -67,3 +69,12 @@ def test_class_handler(app):
 def test_bad_handler(app):
     with pytest.raises(TypeError):
         app.path('/hello')('bad handler')
+
+
+def test_redirect(app):
+    @app.path('/redirect')
+    def redirect(request):
+        return pwf.redirect(request, '/')
+
+    r = requests.get('http://test/redirect')
+    assert r.text == 'index!'
