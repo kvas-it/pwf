@@ -60,6 +60,8 @@ def test_class_handler(app):
     assert r.text == '1'
     r = requests.get('http://test/counter')
     assert r.text == '2'
+    r = requests.post('http://test/counter')
+    assert r.status_code == 405
 
 
 def test_bad_handler(app):
