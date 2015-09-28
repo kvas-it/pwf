@@ -14,6 +14,7 @@ ${DEVENV}:
 
 ${PYTEST}: ${DEVENV}
 	${PIP} install pytest wsgi_intercept requests
+	touch ${PYTEST}
 
 test: ${PYTEST}
 	${PYTEST} tests
