@@ -1,4 +1,4 @@
-.PHONY: devenv demo clean install uninstall test
+.PHONY: devenv demo clean install uninstall test testcov htmlcov
 
 DEVENV=__
 
@@ -13,11 +13,17 @@ ${DEVENV}:
 	${PYTHON} setup.py develop
 
 ${PYTEST}: ${DEVENV}
-	${PIP} install pytest wsgi_intercept requests
+	${PIP} install pytest pytest-cov wsgi_intercept requests
 	touch ${PYTEST}
 
 test: ${PYTEST}
 	${PYTEST} tests
+
+testcov: ${PYTEST}
+	${PYTEST} --cov=pwf tests
+
+htmlcov: ${PYTEST}
+	${PYTEST} --cov-report=html --cov=pwf tests
 
 demo:
 	${PYTHON} demo.py
@@ -29,4 +35,4 @@ uninstall:
 	pip uninstall -y pwf
 
 clean:
-	rm -Rf ${DEVENV} .cache pwf.egg-info `find . -name *.pyc` build dist MANIFEST
+	rm -Rf ${DEVENV} .coverage .cache htmlcov pwf.egg-info `find . -name *.pyc` build dist MANIFEST

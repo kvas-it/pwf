@@ -1,4 +1,6 @@
 __
 .cache
+.coverage
+htmlcov
 pwf.egg-info
 *.pyc
